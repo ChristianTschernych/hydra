@@ -1,7 +1,8 @@
 <h2>Users:</h2>
 <button [ngClass]="currentClasses" [disabled]="!enableAdd" class="btn btn-block mb-3 btn-primary">Add new User</button>
 <ul class="list-unstyled" *ngIf="users?.length > 0 && loaded">
-    <li class="card card-body mb-2" *ngFor="let user of users" [class.bg-light]="user.isActive" [style.border-color]="user.isActive ? 'green' : ''">
+    <li class="card card-body mb-2" *ngFor="let user of users" [class.bg-light]="user.isActive"
+        [style.border-color]="user.isActive ? 'green' : ''">
         <div class="row">
             <div class="col-sm-4">
                 <img class="img-fluid" [src]="user.image" alt="">
@@ -9,7 +10,7 @@
             <div class="col-sm-4">
                 <h3 class="raven" [ngStyle]="currentStyles">{{ user.firstname + " " + user.lastname}}</h3>
 
-                <ul class="list-group"*ngIf="showExtended">
+                <ul class="list-group" *ngIf="showExtended">
                     <li class="list-group-item">Adress details:</li>
                     <li class="list-group-item">Street: {{user.adress.street}}</li>
                     <li class="list-group-item">City: {{user.adress.city}}</li>
@@ -20,7 +21,7 @@
             </div>
         </div>
 
-        
+
     </li>
 </ul>
 
