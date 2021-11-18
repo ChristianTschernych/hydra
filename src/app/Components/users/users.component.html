@@ -1,0 +1,17 @@
+<h2>Users:</h2>
+<ul *ngIf="users?.length > 0 && loaded">
+    <li *ngFor="let user of users">
+        <h2 class="raven">{{ user.firstname + " " + user.lastname}}</h2>
+
+        <ul *ngIf="showExtended">
+            <li>Adress details:</li>
+            <li>Street: {{user.adress.street}}</li>
+            <li>City: {{user.adress.city}}</li>
+            <li>Postcode: {{user.adress.state}}</li>
+        </ul>
+    </li>
+</ul>
+
+<h4 *ngIf="users?.length < 1 && loaded">No Users found</h4>
+
+<h4 *ngIf="!loaded">Loading Users...</h4>
