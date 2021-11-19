@@ -7,12 +7,23 @@ import { User } from 'src/app/models/User';
   styleUrls: ['./users.component.sass']
 })
 export class UsersComponent implements OnInit {
+  user: User = {
+    firstname: "",
+    lastname: "",
+    age: null,
+    adress: {
+      street: "",
+      city: "",
+      state: ""
+    }
+  };
   users: User[];
   showExtended: boolean = true;
   loaded:boolean = false;
-  enableAdd: boolean = true;
+  enableAdd: boolean = false;
   currentClasses = {};
   currentStyles = {};
+  showUserForm: boolean = false;
 
 
   constructor() { }
@@ -30,9 +41,10 @@ export class UsersComponent implements OnInit {
               city: "Bochum",
               state: "Northrhine Westfalia"
           },
-          image: "https://m.media-amazon.com/images/I/41h5C9nRU9L._AC_.jpg",
+          image: "http://lorempixel.com/300/300/people/1",
           balance:100,
-          registered: new Date("01/02/2018 08:30:00")
+          registered: new Date("01/02/2018 08:30:00"),
+          hide:true
       },
       {
         firstname: 'Fritz',
@@ -43,10 +55,11 @@ export class UsersComponent implements OnInit {
             city: "Bochum",
             state: "Northrhine Westfalia"
         },
-        image: "http://lorempixel.com/600/600/people/3",
+        image: "http://lorempixel.com/300/300/people/3",
         isActive:true,
         balance:77,
-        registered: new Date("11/07/2015 02:40:00")
+        registered: new Date("11/07/2015 02:40:00"),
+        hide:true
     },
     {
       firstname: 'Peter',
@@ -57,25 +70,14 @@ export class UsersComponent implements OnInit {
           city: "Bochum",
           state: "Northrhine Westfalia"
       },
-      image: "https://m.media-amazon.com/images/I/91BLCCISDTL._AC_SL1500_.jpg",
+      image: "http://lorempixel.com/300/300/people/7",
       isActive:false,
       balance:504,
-      registered: new Date("01/02/2018 08:30:00")
+      registered: new Date("01/02/2018 08:30:00"),
+      hide:true
   }
       ]
-      this.addUser(
-        {
-          firstname: 'Satan',
-          lastname: "hand",
-          age: 34,
-          adress: {
-              street:"saulage 5",
-              city: "Essen",
-              state: "Northrhine Westfalia"
-          },
-          image: "https://www.toygamewiz.com/media/catalog/product/cache/35/image/650x/040ec09b1e35df139433887a97daa66f/t/-/t-remoteblackbb9_2_.jpg"
-      }
-      );
+      
 
     this.loaded = true
     }, 800);
@@ -89,9 +91,22 @@ export class UsersComponent implements OnInit {
 
   }
 
-  addUser(user:User) {
-    this.users.push(user)
+  addUser() {
+    this.users.unshift(this.user)
+    this.user.isActive = true
+    this.user.registered = new Date;
+
+    this.user = {
+      firstname: "",
+      lastname: "",
+      age: null,
+      adress: {
+        street: "",
+        city: "",
+        state: ""
+      }
   }
+}
 
   setCurrentClasses() {
     this.currentClasses = {
@@ -104,6 +119,16 @@ export class UsersComponent implements OnInit {
       'padding-top': this.showExtended ? '0' : '100px',
       'font-size': this.showExtended ? '' : '35px'
     }
+  }
+
+  toggleHide(user:User) {
+    //very smart way to toggle a value
+    user.hide = !user.hide;
+  }
+
+  onSubmit(e) {
+    
+    e.preventDefault()
   }
 
 }
