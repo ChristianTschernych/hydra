@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/models/User';
 
 @Component({
@@ -10,12 +10,7 @@ export class UsersComponent implements OnInit {
   user: User = {
     firstname: "",
     lastname: "",
-    age: null,
-    adress: {
-      street: "",
-      city: "",
-      state: ""
-    }
+    email: ""
   };
   users: User[];
   showExtended: boolean = true;
@@ -24,6 +19,7 @@ export class UsersComponent implements OnInit {
   currentClasses = {};
   currentStyles = {};
   showUserForm: boolean = false;
+  @ViewChild('userForm') form:any;
 
 
   constructor() { }
@@ -35,13 +31,7 @@ export class UsersComponent implements OnInit {
         {
           firstname: 'John',
           lastname: "Doeinson",
-          age: 43,
-          adress: {
-              street:"Schlüterweg 5",
-              city: "Bochum",
-              state: "Northrhine Westfalia"
-          },
-          image: "http://lorempixel.com/300/300/people/1",
+          email: "John@gmail.com",
           balance:100,
           registered: new Date("01/02/2018 08:30:00"),
           hide:true
@@ -49,13 +39,7 @@ export class UsersComponent implements OnInit {
       {
         firstname: 'Fritz',
         lastname: "Doeinson",
-        age: 43,
-        adress: {
-            street:"Schlüterweg 5",
-            city: "Bochum",
-            state: "Northrhine Westfalia"
-        },
-        image: "http://lorempixel.com/300/300/people/3",
+        email: "Fritz@gmail.com",
         isActive:true,
         balance:77,
         registered: new Date("11/07/2015 02:40:00"),
@@ -64,13 +48,7 @@ export class UsersComponent implements OnInit {
     {
       firstname: 'Peter',
       lastname: "Doeinson",
-      age: 43,
-      adress: {
-          street:"Schlüterweg 5",
-          city: "Bochum",
-          state: "Northrhine Westfalia"
-      },
-      image: "http://lorempixel.com/300/300/people/7",
+      email: "Peter@gmail.com",
       isActive:false,
       balance:504,
       registered: new Date("01/02/2018 08:30:00"),
@@ -92,20 +70,15 @@ export class UsersComponent implements OnInit {
   }
 
   addUser() {
-    this.users.unshift(this.user)
+    /* this.users.unshift(this.user)
     this.user.isActive = true
     this.user.registered = new Date;
 
     this.user = {
       firstname: "",
       lastname: "",
-      age: null,
-      adress: {
-        street: "",
-        city: "",
-        state: ""
-      }
-  }
+      email: ""
+  } */
 }
 
   setCurrentClasses() {
@@ -126,9 +99,18 @@ export class UsersComponent implements OnInit {
     user.hide = !user.hide;
   }
 
-  onSubmit(e) {
-    
-    e.preventDefault()
+  onSubmit({value, valid}: {value: User, valid: boolean}) {
+    if(!valid) {
+      console.log("Form is not legit!");
+    }
+    else {
+      value.isActive = true;
+      value.registered = new Date();
+      value.hide = true;
+      this.users.unshift(value)
+
+      this.form.reset();
+    }
   }
 
 }

@@ -2,33 +2,46 @@
 <button (click)="showUserForm=!showUserForm" class="btn btn-dark mb-3">Add User</button>
 <div class="card card-body mb-3" *ngIf="showUserForm">
     <h3>Add User</h3>
-    <form (submit)="onSubmit($event)" action="">
+    <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)" action="">
         <div class="form-group">
             <label for="">First Name</label>
-            <input type="text" class="form-control" name="firstname" [(ngModel)]="user.firstname">
+            <input #userFirstName="ngModel" required minlength="3" type="text" class="form-control" name="firstname"
+                [(ngModel)]="user.firstname" [ngClass]="{'is-invalid' : userFirstName.errors && userFirstName.touched}">
+            <div class="invalid-feedback" [hidden]="!userFirstName.errors?.required">
+                First name Required
+            </div>
+            <div class="invalid-feedback" [hidden]="!userFirstName.errors?.minlength">
+                Name is too short...
+            </div>
         </div>
         <div class="form-group">
-            <label for="">Last name</label>
-            <input type="text" class="form-control" name="lastname" [(ngModel)]="user.lastname">
+            <label for="">Last Name</label>
+            <input #userLastName="ngModel" required minlength="3" type="text" class="form-control" name="lastname"
+                [(ngModel)]="user.lastname" [ngClass]="{'is-invalid' : userLastName.errors && userLastName.touched}">
+            <div class="invalid-feedback" [hidden]="!userLastName.errors?.required">
+                Last name Required
+            </div>
+            <div class="invalid-feedback" [hidden]="!userLastName.errors?.minlength">
+                Name is too short...
+            </div>
         </div>
-        <div class="form-group">
-            <label for="">Age</label>
-            <input type="number" class="form-control" name="age" [(ngModel)]="user.age">
+
+            <div class="form-group">
+                <label for="">Email</label>
+                <input #userEmail="ngModel" required 
+                pattern="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$"
+                type="email" class="form-control" name="email"
+                [(ngModel)]="user.email" [ngClass]="{'is-invalid' : userEmail.errors && userEmail.touched}">
+            <div class="invalid-feedback" [hidden]="!userEmail.errors?.required">
+                Email Required
+            </div>
+            <div class="invalid-feedback" [hidden]="!userEmail.errors?.pattern">
+                Email is not valid...
+            </div>
         </div>
-        <div class="form-group">
-            <label for="">Street</label>
-            <input type="text" class="form-control" name="street" placeholder="Street" [(ngModel)]="user.adress.street">
-        </div>
-        <div class="form-group">
-            <label for="">City</label>
-            <input type="text" class="form-control" name="city" placeholder="City" [(ngModel)]="user.adress.city">
-        </div>
-        <div class="form-group">
-            <label for="">State</label>
-            <input type="text" class="form-control" name="state" placeholder="State" [(ngModel)]="user.adress.state">
-        </div>
-        <button (click)="addUser()" [ngClass]="currentClasses"
-            [disabled]="user.firstname == '' || user.lastname== ''" class="btn btn-block mb-3 mt-3 btn-primary">Add new User</button>
+
+            <button [ngClass]="currentClasses" [disabled]="!userForm.form.valid"
+                class="btn btn-block mb-3 mt-3 btn-primary">Add new User</button>
     </form>
 </div>
 
@@ -43,10 +56,8 @@
                     [ngClass]="user.hide ? 'fa fa-plus' : 'fa fa-minus'" class="fa fa-plus"></i></button></small>
 
         <ul class="list-group" *ngIf="!user.hide">
-            <li class="list-group-item">Adress details:</li>
-            <li class="list-group-item">Street: {{user.adress.street}}</li>
-            <li class="list-group-item">City: {{user.adress.city}}</li>
-            <li class="list-group-item">State: {{user.adress.state}}</li>
+            <li class="list-group-item">Email: {{user.email}}</li>
+
             <li class="list-group-item">Balance: {{user.balance | currency:"EUR"}}</li>
             <li class="list-group-item">Joined: {{user.registered | date:"short"}}</li>
         </ul>
