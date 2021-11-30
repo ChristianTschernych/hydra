@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/models/User';
+import { MyServiceService } from 'src/app/services/my-service.service';
 
 @Component({
   selector: 'app-users',
@@ -22,40 +23,14 @@ export class UsersComponent implements OnInit {
   @ViewChild('userForm') form:any;
 
 
-  constructor() { }
+  constructor(private myService:MyServiceService) { }
 
   //inject construction
   ngOnInit(): void {
     setTimeout(() => {
-      this.users = [
-        {
-          firstname: 'John',
-          lastname: "Doeinson",
-          email: "John@gmail.com",
-          balance:100,
-          registered: new Date("01/02/2018 08:30:00"),
-          hide:true
-      },
-      {
-        firstname: 'Fritz',
-        lastname: "Doeinson",
-        email: "Fritz@gmail.com",
-        isActive:true,
-        balance:77,
-        registered: new Date("11/07/2015 02:40:00"),
-        hide:true
-    },
-    {
-      firstname: 'Peter',
-      lastname: "Doeinson",
-      email: "Peter@gmail.com",
-      isActive:false,
-      balance:504,
-      registered: new Date("01/02/2018 08:30:00"),
-      hide:true
-  }
-      ]
       
+      //fetch all users
+      this.users = this.myService.getUsers();
 
     this.loaded = true
     }, 800);
