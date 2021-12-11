@@ -1,19 +1,27 @@
 import enum
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi import Body
 from pydantic import BaseModel
 from typing import Optional
 from random import randrange
+from time import sleep
+
+import psycopg2 as psy
+from psycopg2.extras import RealDictCursor
+from starlette.routing import Host
+import models
+from database import engine, get_db
+from sqlalchemy.orm import Session
+
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 class Post(BaseModel):
     title: str
     content: str
-    category: int
-    private: bool = True
-    rating: Optional[int] = None
-    id: int = None
+    published: bool = True
 
 categories = ["Travel", "Food", "Shopping", "Retro"]
 my_posts = [{"title":"Title of post 1", "content":"content of post 1", "id":0},
@@ -39,31 +47,43 @@ def find_index_post(id):
     return None
 
 
-
-
 @app.get("/")
 def check():
     return {"message": "Hello World. This is fastAPI speaking!"}
 
+@app.get("/sqlalchemy")
+def testing_sql(db: Session = Depends(get_db)):
+
+    posts = db.query(models.Post).all()
+    return {"data":posts}
+
 @app.get("/posts")
-def check():
-    return {"data" : my_posts}
+def get_all_posts(db: Session = Depends(get_db)):
+
+    posts = db.query(models.Post).all()
+    return {"data":posts}
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_posts(new_post: Post):
-    new_post = new_post.dict()
-    print("Added Post:")
-    print(new_post)
-    #new_post.id = len(my_posts)
-    new_post['id'] = randrange(0, 10000)
-    my_posts.append(new_post)
+def create_posts(new_post: Post, db: Session = Depends(get_db)):
+    #%s sorgt für die Sanitization unseres INPUTs so kännen keine SQL Befehle übertragen werden
+    will.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """, 
+    (new_post.title,new_post.content,new_post.published))
+
+    new_post = will.fetchone()
+    conn.commit()
+
+    db.
     return {"data": new_post}
 
 #Id ist ein path parameter
 @app.get("/posts/{id}")
-def get_post(id:int):
+def get_post(id:int, db: Session = Depends(get_db)):
     #important to convert to int
-    post = find_post(id)
+    
+    will.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
+    post = will.fetchone()
+    print(post)
+
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail= {"message":f"post with id {id} was not found!"})
@@ -73,22 +93,27 @@ def get_post(id:int):
     return {"data" : post}
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_single_post(id:int):
-    post = delete_post(id)
+def delete_single_post(id:int, db: Session = Depends(get_db)):
+    will.execute("""DELETE FROM posts WHERE id = %s RETURNING * """, (str(id)))
 
+    post = will.fetchone()
+    conn.commit()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": f"Post with id {id} could not be deleted!"})
 
-    return {"message" : f"Post with id {id} was deleted!"}
+    return {"message" : f"Post with id {id} was deleted!",
+            "data" : post}
 
 @app.put("/posts/{id}")
-def update_post(id:int, post:Post):
-    index = find_index_post(id)
+def update_post(id:int, post:Post, db: Session = Depends(get_db)):
+    will.execute("""UPDATE posts SET title=%s, content=%s, published=%s WHERE id = %s RETURNING *""", 
+    (post.title, post.content, post.published, id))
+    updt_post = will.fetchone()
+    conn.commit()
 
-    if index == None:
+    if updt_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail={"message": f"Post with id {id} could not be updated!"})
-    post_dict = post.dict()
-    post_dict["id"] = id
-    my_posts[index] = post_dict
-    return {"message":post_dict}
+
+    return {"message":f"Post with id {id} was updated!",
+            "data":updt_post}
