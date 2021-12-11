@@ -72,7 +72,7 @@ def create_posts(new_post: Post, db: Session = Depends(get_db)):
     new_post = will.fetchone()
     conn.commit()
 
-    db.
+    
     return {"data": new_post}
 
 #Id ist ein path parameter
