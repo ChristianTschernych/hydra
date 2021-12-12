@@ -9,7 +9,7 @@
 
 # dependencies
 /node_modules
-/backend/venv
+/backend/venv/
 
 # profiling files
 chrome-profiler-events*.json
